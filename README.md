@@ -18,7 +18,8 @@ Soporta ejecución local (offline) para pruebas y despliegue directo en AWS.
 - `src/` → Código fuente en NestJS organizado por módulos.  
 - `serverless.yml` → Configuración de Serverless Framework.  
 - `serverless/*.yml` → Archivos adicionales de configuración (DynamoDB, IAM, RDS, etc.).  
-- `package.json` → Scripts de npm y dependencias.   
+- `package.json` → Scripts de npm y dependencias.
+- `db_script.sql` → Modelo de base de datos en mysql.    
 
 ---
 
