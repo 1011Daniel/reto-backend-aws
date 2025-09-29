@@ -74,6 +74,8 @@ sls print --stage dev
 
 ##  Base de datos RDS
 
+Se creo un archivo db_script.sql que modela la base de datos minima en mysql para guardar los Appointmments, junto con otras tablas para permitir un mejor contexto.
+
 Se utilizarán **dos instancias MySQL** mínimas (`t2.micro`):
 
 - `mysql_pe`  
