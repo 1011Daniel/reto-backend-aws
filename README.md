@@ -1,6 +1,11 @@
 # Backend Serverless con NestJS + AWS
 
-Este proyecto es un backend en NestJS siguiendo principios SOLID, desplegado en AWS mediante Serverless Framework v4.  
+Este proyecto es un backend en NestJS siguiendo principios SOLID, desplegado en AWS mediante Serverless Framework v4.
+
+Considera capas de application, domain, infrastructure y modules con el fin de cumplir con Clean Architecture y Repository Pattern.
+
+Incluye entrypoints para requests http y funciones Lambda.
+
 Soporta ejecución local (offline) para pruebas y despliegue directo en AWS.
 
 ---
@@ -19,6 +24,7 @@ Soporta ejecución local (offline) para pruebas y despliegue directo en AWS.
 - `serverless.yml` → Configuración de Serverless Framework.  
 - `serverless/*.yml` → Archivos adicionales de configuración (DynamoDB, IAM, RDS, etc.).  
 - `package.json` → Scripts de npm y dependencias.
+- `src/modules/api/__tests__` → Pruebas unitarias con Jest.
 - `db_script.sql` → Modelo de base de datos en mysql.    
 
 ---
@@ -43,6 +49,10 @@ npm run sls:deploy
 ### 4. Eliminar stack de AWS
 ```bash
 sls remove --stage dev
+```
+### 5. Ejecutar pruebas unitarias con jest
+```bash
+npm run test
 ```
 
 ---
