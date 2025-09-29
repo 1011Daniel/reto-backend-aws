@@ -1,0 +1,68 @@
+Resources:
+  AppointmentLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: appointment-lambda-role-${self:provider.stage}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: appointment-dynamo-sns-sqs-eventbridge-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              # DynamoDB
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource:
+                  - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:provider.environment.DYNAMO_TABLE}
+                  - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:provider.environment.DYNAMO_TABLE}/index/InsuredIdIndex
+              # SNS
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                Resource: "*"
+
+              # CloudWatch Logs
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+
+              # EventBridge
+              - Effect: Allow
+                Action:
+                  - events:PutEvents
+                Resource: !GetAtt AppointmentEventBus.Arn
+
+              # SQS (para workers PE y CL)
+              - Effect: Allow
+                Action:
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                Resource:
+                  - !GetAtt SQSPe.Arn
+                  - !GetAtt SQSCl.Arn
+                  - !GetAtt SQSCommon.Arn
+
+              # Habilitar si se usamos secrets con RDS
+              # - Effect: Allow
+              #   Action:
+              #     - secretsmanager:GetSecretValue
+              #   Resource:
+              #     - arn:aws:secretsmanager:${aws:region}:${aws:accountId}:secret:rds/mysql_pe-*
+              #     - arn:aws:secretsmanager:${aws:region}:${aws:accountId}:secret:rds/mysql_cl-*

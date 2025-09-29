@@ -1,0 +1,5 @@
+Resources:
+  AppointmentTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: appointment-topic-${self:provider.stage}

@@ -1,0 +1,36 @@
+service: backend
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  environment:
+    DYNAMO_TABLE: ${self:service}-appointment-${self:provider.stage}
+    SNS_TOPIC_ARN: !Ref AppointmentTopic
+    EVENT_BUS_NAME: appointment-event-bus-${self:provider.stage}
+  
+  # Para habilitar la vpc y los sg para la rds
+  # vpc:                            
+  #   securityGroupIds:
+  #     - sg-lambda                 
+  #   subnetIds:
+  #     - subnet-1                
+  #     - subnet-2
+
+# plugins:
+#   - serverless-offline
+
+package:
+  individually: true
+
+functions: 
+  - ${file(./serverless/api.yml)}
+  - ${file(./serverless/worker.yml)}
+
+resources:
+  - ${file(./serverless/dynamodb.yml)}
+  - ${file(./serverless/iam.yml)}
+  - ${file(./serverless/sns.yml)}
+  - ${file(./serverless/sqs.yml)}
+  - ${file(./serverless/eventbridge.yml)}

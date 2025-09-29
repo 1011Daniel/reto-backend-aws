@@ -1,0 +1,76 @@
+Resources:
+  SQSPe:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: sqs_pe-${self:provider.stage}
+
+  SQSCl:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: sqs_cl-${self:provider.stage}
+
+  SQSCommon:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: sqs_common-${self:provider.stage}
+
+  SubscriptionPE:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref AppointmentTopic
+      Protocol: sqs
+      Endpoint: !GetAtt SQSPe.Arn
+      FilterPolicy:
+        countryISO: ["PE"]
+
+  SubscriptionCL:
+    Type: AWS::SNS::Subscription
+    Properties:
+      TopicArn: !Ref AppointmentTopic
+      Protocol: sqs
+      Endpoint: !GetAtt SQSCl.Arn
+      FilterPolicy:
+        countryISO: ["CL"]
+
+  SQSPePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues: [!Ref SQSPe]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: "SQS:SendMessage"
+            Resource: !GetAtt SQSPe.Arn
+            Principal: "*"
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref AppointmentTopic
+
+  SQSClPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues: [!Ref SQSCl]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: "SQS:SendMessage"
+            Resource: !GetAtt SQSCl.Arn
+            Principal: "*"
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref AppointmentTopic
+
+  SQSCommonPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues: [!Ref SQSCommon]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: SQS:SendMessage
+            Resource: !GetAtt SQSCommon.Arn

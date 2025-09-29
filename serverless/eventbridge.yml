@@ -1,0 +1,18 @@
+Resources:
+  AppointmentEventBus:
+    Type: AWS::Events::EventBus
+    Properties:
+      Name: appointment-event-bus-${self:provider.stage}
+
+  AppointmentEventRule:
+      Type: AWS::Events::Rule
+      Properties:
+        EventBusName: !Ref AppointmentEventBus
+        EventPattern:
+          source:
+            - "appointments.worker"       # campo Source
+          detail-type:
+            - "AppointmentInserted"       # campo DetailType
+        Targets:
+          - Arn: !GetAtt SQSCommon.Arn
+            Id: "TargetCommonQueue"

@@ -1,0 +1,29 @@
+appointment_pe:
+  handler: dist/mainworker.appointmentPeHandler
+  role:
+    Fn::GetAtt: [AppointmentLambdaRole, Arn]   
+  events:
+    - sqs:
+        arn: !GetAtt SQSPe.Arn
+        batchSize: 5
+        maximumConcurrency: 2
+
+appointment_cl:
+  handler: dist/mainworker.appointmentClHandler
+  role:
+    Fn::GetAtt: [AppointmentLambdaRole, Arn]   
+  events:
+    - sqs:
+        arn: !GetAtt SQSCl.Arn
+        batchSize: 5
+        maximumConcurrency: 2
+
+appointment_common:
+  handler: dist/mainworker.appointmentCommonHandler
+  role:
+    Fn::GetAtt: [AppointmentLambdaRole, Arn]
+  events:
+    - sqs:
+        arn: !GetAtt SQSCommon.Arn
+        batchSize: 5
+        maximumConcurrency: 2

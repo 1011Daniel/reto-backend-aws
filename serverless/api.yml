@@ -1,0 +1,17 @@
+appointment:
+  handler: dist/mainapi.handler
+  role:
+    Fn::GetAtt: [AppointmentLambdaRole, Arn]
+  events:
+    - httpApi:
+        path: /appointment
+        method: post
+    - httpApi:
+        path: /appointment/{insuredId}
+        method: get
+    - httpApi:
+        path: /docs
+        method: get
+    - httpApi:
+        path: /docs/{proxy+}
+        method: get
